@@ -1,0 +1,52 @@
+# # 1.14버전 2개가 동작중일때, 각각의 endpoint를 가지고 동작중이고 LB(Service)를 통해 트래픽이 분배가 된다.
+# # 새로운 제품1.15버전이 2개를 동작시켰다고 가정한다면, Service는 Label을 1.14를 1.15로 바꾸면 바로 pod LB가 바뀌는효과가 생긴다.
+# # rollback이 쉽고 업데이트되는 과정이 쉽다. blue->green 이 두 종류 올라가야하기에 리소스를 많이 사용하고 이동시에 약간의 단절이 생기는 단점도 있다.
+
+# Q. blue라는 이름으로 Pod2개 배포. (Label=version:blue/port:8080)
+# app-svc service를 version:blue 레이블로 묶어 NodePort 타입의 서비스 Port 80으로 운영.
+# gerrn이라는 이름의 Pod 2개 배포. label은 version: green port는 마찬가지로 8080. app-svc의 Label을 blue에서 green으로 바꾸시오
+
+kubectl create deployment blue --image=snlinux:blue --port=8080 --replicas=2 --dry-run=client -o yaml > blue.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      version: blue
+  template:
+    metadata:
+      labels:
+        version: blue
+    spec:
+      containers:
+      - name: nginx
+        image: smlinux/nginx:blue
+        ports:
+        - containerPort: 8080
+
+
+-----------
+
+kubectl expose deployment blue --name=app-svc --type=Nodeport --port=80 --targetport=8080
+
+-------
+
+kubectl create deployment green --image=snlinux:green --port=8080 --replicas=2 --dry-run=client -o yaml > green.yaml
+
+#green에 맞춰 수정
+
+#마지막으로 service를 수정해야한다.
+
+kubectl edit service app-svc
+#현재: 2개의 blue 2개의 green. 총 4개의 pod가 실행중. service는 blue를 바라보는중.
+
+api....
+  selector:
+    #version: blue
+    version: green
+....
+

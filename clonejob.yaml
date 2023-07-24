@@ -1,0 +1,27 @@
+# 크론잡과 컨테이너 이름 : hello, 매 분마다. 이미지는 비지박스:stable, restartPolicy는 Never
+# 또한 10초내로 동작해야하며 10초내 미동작시 컨테이너 중지할 것.
+# command는 sleep 5; 삽입
+
+vi cronjob.yaml
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 10
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox:stable
+            command:
+            - sleep
+            - 5
+          restartPolicy: Never
+
+
+kubectl apply -f=cronjob.yaml

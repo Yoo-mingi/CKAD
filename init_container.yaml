@@ -1,3 +1,32 @@
 #앱 컨테이너 실행전에 미리 실행시킬 컨테이너
 #본 Container가 실행되기 전에 사전 작업이 필요한 경우 사용
 #init Container가 모두 실행된 후 본 Container 실행
+
+# Q. init Container로 busybox:1.28을 추가하고 /workdir/fcdata.txt 라는 empty 파일을 생성한다.
+# 만약 init Container가 text파일을 생성하지 못하면 main 컨테이너는 실행할 수 없다.
+# init과 main Container는 볼륨 마운트를 통해 /workdir 디렉토리를 공유한다.
+
+# 요약 : init Container로 파일 생성 -> 해당 파일 볼륨마운트로 사용.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fx-app
+spec:
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "touch /workdir/fcdata.txt"]
+    volumeMounts:
+    - name: workdir
+      mountPath: "/workdir"
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', "! -f /workdir/fcdata.txt" blabla...]
+    volumeMounts:
+    - name: workdir
+      mountPath: "/workdir"
+  volumes:
+  - name: workdir
+    emptyDir: {}

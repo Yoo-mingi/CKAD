@@ -1,0 +1,19 @@
+helm repo add [name] [url]
+bitnami : 유명한 헬름 차트 사이트.
+ex) helm repo add bitnami https://bit...
+
+repo에서 제공하는 chart 검색
+helm search repo [keyword]
+
+chart 정보 보기
+helm show chart [chart]
+helm inspect values [chart]
+ex) helm show chart bitnami/mariadb
+
+chart 아카이브 설치 :
+halm install chart_name [chart]
+ex)helm install app-db bitnami/mariadb
+
+chart 아카이브 삭제
+helm uninstall chart_name
+ex)helm uninstall app-db

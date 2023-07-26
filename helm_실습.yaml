@@ -1,0 +1,45 @@
+#Q nginx를 helm를 통해 배포.
+#chart name: ckad-webserver 후에 worker1에서 동작확인
+helm repo add {주어진 레파지토리}
+helm repo list # 확인
+
+helm search repo bitname/nginx
+
+helm install ckad-servserver bitnami/nginx
+
+helm list
+kubectl get all
+
+curl k8s-worker1:{port}
+
+
+
+------------------------
+
+helm repo add bitnami/https://charts.bitnami.com
+
+#레포지터리 종류
+helm repo list
+#패키지 탐색
+helm search repo
+helm search repo bitnami/mariadb
+#패키지 정보 상세 보기
+helm show chart bitnami/mariadb
+
+halm list
+#패키지 설치.
+helm install app-db --set.auth.rooPassword=secre... bitnami/mariadb
+
+kubectl get pods
+kubectl get nodes
+kubectl get service
+kubectl get secret
+등 여러 패키지 동작중인 것 확인.
+
+helm list
+
+
+#레파지토리 삭제
+helm repo remove bitnami
+
+----------

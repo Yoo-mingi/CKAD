@@ -16,4 +16,4 @@ ex)helm install app-db bitnami/mariadb
 
 chart 아카이브 삭제
 helm uninstall chart_name
-ex)helm uninstall app-db
+ex)helm uninstall

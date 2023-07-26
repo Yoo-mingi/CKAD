@@ -1,0 +1,73 @@
+건강하지 않은 컨테이너에게 커넥션이 가지 않게 차단시켜주는 친구.
+각각 pod는 endpoint(IP)를 가지고 있을 것이다.
+
+거기에 readiness에 특정 파일을 집어넣는다면, 주기적으로 체크 후 해당 파일이 없다면 해당 pod으로 가는 프래픽을 막는 것이다. 보통 liveness와 함께 사용한다.
+
+즉, 
+liveness : 건강한 pod를 만들겠다.
+readiness : 건강한 endpoint를 만들겠다.
+
+
+# 아래는 liveness와 readiness가 둘 모두 들어간예제.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goproxy
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: goproxy
+    image: registry.k8s.io/goproxy:0.1
+    ports:
+    - containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 20
+
+#gopeoxy는 8080 포트로 동작중,
+#러닝된 후에 5초부터 시작. 10초마다 헬스체크 반복.
+#tcp 8080포트로 연결되어야만 endpoint(IP)를 생성하겠다. 성공은 1번 실패는 3번(기본겂)
+
+#컨테이너 자체가 건강한지 확인하겠다.
+#15초 후에 시작하고 20초마다 하겠다. 만약 문제가 생긴다면 컨테이너 재실행 시키겠다.
+
+---------------------
+
+Q. 
+readiness : httpGet probe를 이용해 smlinux/appjs컨테이너에서 8080포트로 200상태코드가 나오지 않으면 외부 traffic이 들어오지 못하도록 구성
+5초 후부터 동자가며 실패 횟수는 1회.(기본 3회임)
+liveness : htpget probe를 이용해 appjs 컨테이너가 웹 통신에 실패하면 재실행 하게 해라. 템플릿은 /data/cjad/liveness.yaml사용
+
+
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goproxy
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: goproxy
+    image: registry.k8s.io/goproxy:0.1
+    ports:
+    - containerPort: 8080
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      initialDelaySeconds: 5
+      failureThresholds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080

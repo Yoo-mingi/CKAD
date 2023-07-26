@@ -1,0 +1,47 @@
+liveness
+컨테이너 2개 요청시 pod 2개를 생성할 것이다.
+그런데 과연 이 pod는 정상적인 running 중일까?(건강한가?)
+위의 내용을 확인하는 것이 liveness probe이다.
+
+컨테이너 실행시 셀프힐링 코드를 집어넣고, 주기적으로 스스로 건강검진을 하는 것이다.
+만약 스스로 검진시 200 return이 아니라면 재실행 하는 것이다.
+
+이것이 liveness
+
+컨테이너의 종류가 많을텐데 각각 건강검진 방법이 다를것이다. web서버라면 80이나 8080으로 시도하곘고, db라면 data파일 탐색 등등 많은 방법이 있을 것이다.
+방식은 크게 3가지다
+
+1. httpGet probe : 지정한 IP주소에 get 요청.
+2. tcpSocket probe : 지정딘 포트에 tcp 연결을 시도
+3. exec probe : exec 명령을 전달하고 명령의 종료코드가 0이 아니면 컨테이너 재시작
+
+반복횟수 : periodSeconds
+실행 딜레이 시간(초) : initialDelaySeconds
+헬스체크 후 응답 기다리는 시간(초) : timeoutSecound
+
+간단 예제 )
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-exec
+spec:
+  containers:
+  - name: liveness
+    image: registry.k8s.io/busybox
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600
+    livenessProbe:
+      exec:
+        command:
+        - cat
+        - /tmp/healthy
+      initialDelaySeconds: 5
+      periodSeconds: 5
+
+#위의 args 는 파일 생성 후 삭제 명령. 밑에 probe를 보면 파일이 있는지 체크한다. 5초 후에 체크한다. 5초후에 또 체크한다.
+#30초 후에 컨테이너의 rm -f로 인해 파일이 없어지니 healthcheck를 통해 k8s는 해당 container 를 kill한다.
+

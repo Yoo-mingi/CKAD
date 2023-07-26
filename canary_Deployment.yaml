@@ -1,0 +1,36 @@
+# # 블루그린의 경우 블루가있고, 그린을 준비했다가 한번에 바꿨다.
+# # 카라니는 공통의 레이블을넣고, 기존에 deployment의 replicas를 하나씩 줄여가며 궁극적으로는 신규 버전으로 모두 바꾸는 것이다.
+
+# # ex) 구버전 Labels: name: app version: stable 신버전 Labels: name: app vsersion: new service의 Selector: name: app
+
+# Q. stable라는 이름으로 smliunx/app:stable이미지를 가진 POD 2개 배포.
+# label은 name=app, version=stable port=8080
+# canary-svc라는 이름의 서비스를 name=app 레이블로 묶어 Nodeport 타입의 서비스 port  80으로 운영하시오.
+# new라는 이름이로 pod를 1개 배포하시오. canary-svc의 레이블을 version=green으로 교체하시오.
+
+kubectl create deployment stable --image=smlinux/app:stable --replicas=2 --port=8080
+
+vi stable.yaml
+label에 name: app version: stable 추가.
+후에 아래의 matchlable에도 마찬가지로 2개 추가.
+
+kubectl apply -f=stable.yaml
+
+kubectl expose deployment stable ---name=canary-svc --type=Nodeport --port=80 --targetport=8080
+
+yaml로 변환후 vi 로 편집.
+name=app 만 남기고 제거.
+
+kubectl apply -f=canary-svc
+
+---------
+
+kubectl create deployment new --image=smlinux/app:new --replicas=1 port=8080
+
+vi > name: app version: new
+
+
+#정리 : 
+#stable은 app,stable이라는 두개의 레이블을 가지고있고, service는 app인 파드에 관해 서비스 중이다.
+#new은 app, new두개가 있으니 service는 stable2개와 new1개 돌리고 있는 상태.
+

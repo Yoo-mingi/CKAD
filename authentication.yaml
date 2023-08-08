@@ -1,0 +1,22 @@
+Limit range: Pod나 컨테이너에 저굥할 수 ㅇ있는 request, limit의 값.
+최대/최소 리소스를 정할 수 있다. cpu, memory값등을 설정할 수 있다.
+
+ex) 
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: devops-limit
+  namespace: devops
+spec:
+  limits:
+  - default: # this section defines default limits
+      cpu: 500m
+      memory: 50Mi
+    defaultRequest: # this section defines default requests
+      cpu: 500m
+      memory: 50Mi
+    type: Container
+
+# Q. devops 네임스피에스에서 pods는 10개, Services는 최대 5개까지 생성할 수 있도록 제한하는 ReesourceQuota devops-quota를 생성하라.
+kubectl create quota devops-quota --hard=pods=10,service=5 -n devops

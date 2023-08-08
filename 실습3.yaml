@@ -1,0 +1,28 @@
+#readiness writeness
+
+kubectl get pods prob-pod -o yaml > prob-pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: prod-pod
+    image: nginx
+    ports:
+    - containerPort: 80
+    readinessProbe:
+      httpGet:
+        path: /started
+        port: 80
+      initialDelaySeconds: 5 #최초 몇초 후 검사시작
+      periodSeconds: 10 # 그 후 몇초마다 검사 주기 =
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 80
+      initialDelaySeconds: 15
+      periodSeconds: 20

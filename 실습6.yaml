@@ -1,0 +1,17 @@
+#docker build
+
+#도커 파일을 빌드.
+
+docker build -t /주어진Path:tag .
+
+#아카이브 파일로 세이브
+docker save -o filename.tar imagename
+
+#tar 파일을 이미지로 풀기
+docker load -i filename.tar
+
+#컨테이너를 tar 파일로
+docker export -o filename.tar containername
+
+#tar파일을 imgage로
+docker import filename.tar new:tag

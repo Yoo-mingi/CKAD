@@ -1,0 +1,25 @@
+#deployment를 app-ac serviceaccount로 동작하게 하라.
+
+kubectl get deployment app-deployment -o yaml > app-deployment.yaml
+vi app-deployment.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: vault-token
+  serviceAccountName: build-robot # 해당 부분을 deployment에 추가.(주의점 : deployment의 spec가 아니라 container의 spec에 추가해야한다.)
+  volumes:
+  - name: vault-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: vault-token
+          expirationSeconds: 7200
+          audience: vault

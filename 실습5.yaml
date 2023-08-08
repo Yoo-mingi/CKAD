@@ -1,0 +1,21 @@
+#cronjob
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ckad
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ckad
+            image: busybox:stable
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - uname
+          restartPolicy: OnFailure

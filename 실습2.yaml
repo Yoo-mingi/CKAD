@@ -1,0 +1,22 @@
+#콘피그맵을 생성하고 해당 config map을 pod에 mount하라.
+#config맵은 env값을 저장해놓은 저장소(볼륨)이다. 해당 볼륨을 만들고, 마운트하는 것으로 해당 configmap에 대한 env값을 사용할 수 있다.
+kubectl create configmap app-config --from-literal=key2=value4
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: redis
+    volumeMounts:
+    - name: foo
+      mountPath: "/app/data"
+      readOnly: true #R&W 둘 다일경우 삭제
+  volumes:
+  - name: foo
+    configMap:
+      name: app-config
+
+kubectl apply -f ~~

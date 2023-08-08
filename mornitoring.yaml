@@ -1,0 +1,6 @@
+node는 제한된 cpu와 memory를 사용한다. 해당 자원을 모니터링 하는것이 주요 목적. 시스템 자신과 운영자도 알아야한다.
+
+metric-server : 클러스터 전체의 리소스 사용 데이터 수집
+
+Q. namespace의 devops에서 pod들 중 cpu를 가장 많이 사용하는 것의 이름
+kubectl top pod --namespace=devops

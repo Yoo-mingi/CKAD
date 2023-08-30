@@ -1,6 +1,7 @@
 # CKAD
 
-![CKAD합격증](https://github.com/Yoo-mingi/CKAD/assets/95891534/109e5ccb-40cb-4348-a587-ce312d395c9d
+![CKAD합격증](https://github.com/Yoo-mingi/CKAD/assets/95891534/109e5ccb-40cb-4348-a587-ce312d395c9d)
+
 
 CKAD 합격 후기 :
 
